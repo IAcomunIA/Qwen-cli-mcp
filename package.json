@@ -1,0 +1,15 @@
+{
+  "name": "coingeko.mcp",
+  "version": "1.0.0",
+  "description": "Dependencias para el servidor MCP de CoinGecko, iniciado por Gemini CLI.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "kasnino",
+  "license": "ISC",
+  "dependencies": {
+    "@coingecko/coingecko-mcp": "latest"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "coingecko_mcp_local": {
+      "command": "yarn",
+      "args": [
+        "start"
+      ],
+      "env": {
+        "COINGECKO_ENVIRONMENT": "demo"
+      }
+    }
+  }
+}
