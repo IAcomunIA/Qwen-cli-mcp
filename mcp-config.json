@@ -1,13 +1,12 @@
 {
   "mcpServers": {
-    "coingecko_mcp_local": {
-      "command": "yarn",
+    "coingecko_mcp": {
+      "command": "npx",
       "args": [
-        "start"
-      ],
-      "env": {
-        "COINGECKO_ENVIRONMENT": "demo"
-      }
+         "@coingecko/coingecko-mcp",
+        "mcp-remote",
+        "https://mcp.api.coingecko.com/sse"
+      ]
     }
   }
 }
