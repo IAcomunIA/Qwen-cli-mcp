@@ -1,4 +1,4 @@
-
+<img width="1920" height="1080" alt="Copia de que es (4) (1)" src="https://github.com/user-attachments/assets/510e6db8-cc45-486e-88c0-7e80f2c2e9fa" />
 # 🚀 Tu Primer Servidor MCP con Gemini CLI: Domina la Terminal con IA 💻
 
 ¡Bienvenido a tu aventura para conectar Gemini CLI con un servidor MCP (Model Context Protocol)! 🎉  
@@ -8,7 +8,10 @@ Este proyecto te permite interactuar con la API de CoinGecko usando Gemini CLI, 
 
 ## 🎥 Tutorial en Video  
 Aprende en vivo cómo conectar tu primer servidor MCP, explora sus herramientas y automatiza tus proyectos como un experto en IA terminal.  
-🔗 [Ver video en YouTube](https://youtu.be/xxxx)  
+🔗 [Ver video en YouTube]([https://youtu.be/xxxx](https://www.youtube.com/watch?v=VnJpMbtYxS4)
+
+[![Mira el tutorial](https://img.youtube.com/vi/VnJpMbtYxS4/0.jpg)](https://www.youtube.com/watch?v=VnJpMbtYxS4)
+
 
 ---
 
@@ -32,37 +35,43 @@ Un servidor MCP para conectar Gemini CLI con la API de CoinGecko.
 
 ## ⚙️ Instalación rápida
 
-
+`
 git clone https://github.com/IAcomunIA/MCP_firts.git
 cd MCP_firts
 yarn install
+
+`
 ---
 
 ## 🔧 Configuración
 
 1. Crea archivo `.env` con tu API key (opcional para demo):
 
+`
 
 COINGECKO_DEMO_API_KEY=tu-api-key
 
+`
 2. Modifica la configuración de Gemini CLI en `~/.gemini/settings.json`  
 👉 **Opción Local:**
 
+```json
 {
-"mcpServers": {
-"coingecko_mcp_local": {
-"command": "npx",
-"args": ["-y", "@coingecko/coingecko-mcp"],
-"cwd": "/ruta/a/MCP_firts/",
-"env": {
-"COINGECKO_DEMO_API_KEY": "YOUR_DEMO_API_KEY",
-"COINGECKO_ENVIRONMENT": "demo"
+  "mcpServers": {
+    "coingecko_mcp_local": {
+      "command": "npx",
+      "args": ["-y", "@coingecko/coingecko-mcp"],
+      "cwd": "/ruta/a/MCP_firts/",
+      "env": {
+        "COINGECKO_DEMO_API_KEY": "YOUR_DEMO_API_KEY",
+        "COINGECKO_ENVIRONMENT": "demo"
+      }
+    }
+  }
 }
-}
-}
-}
+```
 👉 **Opción Remota:**
-
+```json
 {
 "mcpServers": {
 "coingecko_mcp": {
@@ -74,19 +83,20 @@ COINGECKO_DEMO_API_KEY=tu-api-key
 }
 }
 }
+```
 ---
 
 ## 🚦 Cómo usar
 
 Arranca el servidor local:
-
+```json
 yarn start
-
+```
 Interactúa con Gemini CLI usando comandos como:
-
+```json
 gemini get_simple_price
 gemini get_coins_markets
-
+```
 ¡Explora todas las herramientas y automatiza consultas cripto directas!
 
 ---
