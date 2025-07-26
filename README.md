@@ -1,6 +1,7 @@
 # Qwen CLI
 
-![Captura de Qwen CLI](./docs/assets/qwen-cli-screenshot.png)
+<img width="1920" height="1080" alt="qwen-cli-ia-qwen-3-coder-480b" src="https://github.com/user-attachments/assets/e134a442-43e6-4073-a039-9d98f13a6f76" />
+
 
 Qwen CLI es una potente herramienta de línea de comandos para flujos de trabajo con IA, adaptada de [**Gemini CLI**](https://github.com/google-gemini/gemini-cli) (consulta [README.gemini.md](./README.gemini.md) para más detalles). Está optimizada para el modelo [Qwen3-Coder-480B-A35B-Instruct](https://github.com/QwenLM/Qwen3-Coder), con soporte mejorado para análisis de código y la integración con el Protocolo de Contexto de Modelo (MCP). Permite a los desarrolladores crear juegos, aplicaciones web, repositorios y plataformas de anime desde la terminal.
 
@@ -35,6 +36,11 @@ Ejecuta Qwen CLI desde cualquier lugar:
 ```bash
 qwen
 ```
+
+### Configuración de la API
+
+Configura tu clave API para Qwen CLI (también puedes añadirla en un archivo `.env` en tu proyecto):
+
 
 Configura las variables de entorno para usar OpenRouter:
 ***Open Router***
@@ -115,9 +121,7 @@ Ejemplo de configuración:
 }
 ```
 
-### Configuración de la API
 
-Configura tu clave API para Qwen CLI (también puedes añadirla en un archivo `.env` en tu proyecto):
 
 
 
