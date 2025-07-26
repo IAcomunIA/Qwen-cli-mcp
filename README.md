@@ -17,9 +17,9 @@ Qwen CLI es una potente herramienta de línea de comandos para flujos de trabajo
 
 ## 🎥 Tutorial en Video  Qwen CLI
 Aprende en vivo cómo activar modelos IA en tu terminal y conectar tu primer servidor MCP, explora sus herramientas y automatiza tus proyectos como un experto en IA terminal.  
-🔗 [Ver video en YouTube]([https://youtu.be/xxxx]([https://www.youtube.com/watch?v=VnJpMbtYxS4](https://www.youtube.com/watch?v=2cD20lagJmg))
+🔗 [Ver video en YouTube]([https://youtu.be/xxxx]([https://www.youtube.com/watch?v=2cD20lagJmg](https://www.youtube.com/watch?v=2cD20lagJmg))
 
-[![Mira el tutorial](https://img.youtube.com/vi/VnJpMbtYxS4/0.jpg)](https://www.youtube.com/watch?v=VnJpMbtYxS4)
+[![Mira el tutorial](https://img.youtube.com/vi/2cD20lagJmg/0.jpg)](https://www.youtube.com/watch?v=2cD20lagJmg)
 
 
 ---
