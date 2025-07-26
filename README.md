@@ -108,7 +108,7 @@ Ejemplo de configuración:
     "Github_mcp_local": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
-      "cwd": "/home/kasnino/MCP_qWEN/Github-mcp"
+      "cwd": "/aqui-tu-ruta-local/Github-mcp"
     }
   },
   "sampling_params": {
