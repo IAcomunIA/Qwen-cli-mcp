@@ -1,20 +1,21 @@
 {
-  "name": "coingeko.mcp",
+  "name": "github-mcp",
   "version": "1.0.0",
-  "description": "Servidor MCP para conectar Gemini CLI con la API de CoinGecko.",
+  "description": "Servidor MCP para conectar Qwen Code CLI con la API de GitHub.",
   "scripts": {
-    "start": "dotenv -- npx -y @coingecko/coingecko-mcp",
+    "start": "dotenv -- npx -y @modelcontextprotocol/server-github",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "gemini-cli",
+    "qwen-code-cli",
     "mcp",
-    "coingecko"
+    "github",
+    "anime-platform"
   ],
   "author": "kasnino",
   "license": "ISC",
   "dependencies": {
-    "@coingecko/coingecko-mcp": "latest",
+    "@modelcontextprotocol/server-github": "latest",
     "dotenv-cli": "^7.4.2"
   }
 }

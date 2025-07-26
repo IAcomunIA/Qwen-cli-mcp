@@ -1,11 +1,10 @@
 {
   "mcpServers": {
-    "coingecko_mcp": {
+    "github_mcp": {
       "command": "npx",
       "args": [
-         "@coingecko/coingecko-mcp",
-        "mcp-remote",
-        "https://mcp.api.coingecko.com/sse"
+        "-y",
+        "@modelcontextprotocol/server-github"
       ]
     }
   }

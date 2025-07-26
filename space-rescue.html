@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rescate Espacial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        .twinkle {
+            animation: twinkle 3s ease-in-out infinite;
+        }
+        body {
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            font-family: 'Arial', sans-serif;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex items-center justify-center m-0 p-0 bg-gradient-to-br from-gray-900 via-purple-900 to-black">
+    <div class="relative w-full max-w-4xl h-[80vh] bg-black/30 rounded-xl overflow-hidden border border-purple-500/30 shadow-2xl shadow-purple-500/20">
+        <div class="absolute inset-0">
+            <div class="absolute top-1/4 left-1/4 w-1 h-1 bg-white rounded-full twinkle"></div>
+            <div class="absolute top-1/3 right-1/3 w-1 h-1 bg-white rounded-full twinkle" style="animation-delay: 0.5s;"></div>
+            <div class="absolute top-2/3 left-1/3 w-1 h-1 bg-white rounded-full twinkle" style="animation-delay: 1s;"></div>
+            <div class="absolute top-1/2 right-1/4 w-1 h-1 bg-white rounded-full twinkle" style="animation-delay: 1.5s;"></div>
+            <div class="absolute top-1/4 right-1/2 w-1 h-1 bg-white rounded-full twinkle" style="animation-delay: 2s;"></div>
+            <div class="absolute top-3/4 left-1/2 w-1 h-1 bg-white rounded-full twinkle" style="animation-delay: 2.5s;"></div>
+            <div class="absolute top-1/3 left-1/5 w-1 h-1 bg-white rounded-full twinkle" style="animation-delay: 0.8s;"></div>
+            <div class="absolute top-2/3 right-1/5 w-1 h-1 bg-white rounded-full twinkle" style="animation-delay: 1.2s;"></div>
+        </div>
+        
+        <canvas id="gameCanvas" class="absolute inset-0 w-full h-full"></canvas>
+
+        <div id="gameOverlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/70 text-white z-20">
+            <h1 id="overlayTitle" class="text-5xl font-bold mb-8 text-purple-400 animate-pulse-slow">Rescate Espacial</h1>
+            <button id="startButton" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full text-xl shadow-lg transform transition duration-300 hover:scale-105">
+                Iniciar Juego
+            </button>
+            <p id="gameOverText" class="text-2xl mt-4 hidden">¡Juego Terminado! Tu puntuación final fue: <span id="finalScore" class="font-bold">0</span></p>
+            <button id="restartButton" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full text-xl shadow-lg transform transition duration-300 hover:scale-105 mt-4 hidden">
+                Reiniciar Juego
+            </button>
+        </div>
+
+        <div id="gameUI" class="absolute top-4 left-4 right-4 flex justify-between items-center text-white z-10 hidden">
+            <div class="flex items-center space-x-4">
+                <span class="text-xl font-bold">Puntos: <span id="scoreDisplay">0</span></span>
+                <span class="text-xl font-bold">Vidas: <span id="livesDisplay">3</span></span>
+            </div>
+            <button id="pauseButton" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105">
+                Pausa
+            </button>
+        </div>
+        
+        <div class="absolute bottom-4 left-0 right-0 text-center text-white/70 text-sm z-10">
+            Usa ← → para mover la nave | Barra espaciadora para disparar | P para Pausar
+        </div>
+    </div>
+
+    <script>
+        // Game elements
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const gameOverlay = document.getElementById('gameOverlay');
+        const overlayTitle = document.getElementById('overlayTitle');
+        const startButton = document.getElementById('startButton');
+        const gameOverText = document.getElementById('gameOverText');
+        const finalScoreDisplay = document.getElementById('finalScore');
+        const restartButton = document.getElementById('restartButton');
+        const gameUI = document.getElementById('gameUI');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const livesDisplay = document.getElementById('livesDisplay');
+        const pauseButton = document.getElementById('pauseButton');
+
+        let gameRunning = false;
+        let paused = false;
+        let score = 0;
+        let lives = 3;
+        let animationFrameId;
+
+        // Set canvas dimensions
+        function setCanvasDimensions() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            ship.x = canvas.width / 2; // Reposition ship on resize
+            ship.y = canvas.height - 100; // Keep ship at bottom
+        }
+        
+        // Spaceship properties
+        const ship = {
+            x: 0, // Will be set by setCanvasDimensions
+            y: 0, // Will be set by setCanvasDimensions
+            width: 50,
+            height: 30,
+            speed: 5,
+            color: '#4F46E5',
+            invincible: false, // For temporary invincibility after hit
+            invincibilityTimer: 0,
+            draw: function() {
+                // Flash effect when invincible
+                if (this.invincible && Math.floor(this.invincibilityTimer / 10) % 2 === 0) {
+                    return; // Don't draw ship during flash
+                }
+
+                // Draw spaceship body
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y - this.height/2);
+                ctx.lineTo(this.x - this.width/2, this.y + this.height/2);
+                ctx.lineTo(this.x + this.width/2, this.y + this.height/2);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Draw cockpit
+                ctx.fillStyle = '#93C5FD';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y - 5, 10, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw engine
+                ctx.fillStyle = '#FBBF24';
+                ctx.fillRect(this.x - 15, this.y + this.height/2 - 5, 30, 10);
+                
+                // Draw engine glow
+                const gradient = ctx.createRadialGradient(
+                    this.x, this.y + this.height/2 + 5, 0,
+                    this.x, this.y + this.height/2 + 5, 20
+                );
+                gradient.addColorStop(0, 'rgba(251, 191, 36, 0.8)');
+                gradient.addColorStop(1, 'rgba(251, 191, 36, 0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(this.x - 20, this.y + this.height/2 + 5, 40, 20);
+            }
+        };
+        
+        // Lasers array
+        const lasers = [];
+        
+        // Shooting function
+        function shoot() {
+            if (gameRunning && !paused) {
+                lasers.push({
+                    x: ship.x,
+                    y: ship.y - ship.height/2,
+                    width: 3,
+                    height: 15,
+                    speed: 10,
+                    color: '#60A5FA'
+                });
+            }
+        }
+        
+        // Draw lasers
+        function drawLasers() {
+            lasers.forEach((laser, index) => {
+                ctx.fillStyle = laser.color;
+                ctx.fillRect(laser.x - laser.width/2, laser.y, laser.width, laser.height);
+                
+                // Add glow effect
+                const gradient = ctx.createRadialGradient(
+                    laser.x, laser.y, 0,
+                    laser.x, laser.y, 10
+                );
+                gradient.addColorStop(0, 'rgba(96, 165, 250, 0.8)');
+                gradient.addColorStop(1, 'rgba(96, 165, 250, 0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(laser.x - 10, laser.y - 10, 20, 20);
+                
+                // Move laser
+                laser.y -= laser.speed;
+                
+                // Remove if off screen
+                if (laser.y < 0) {
+                    lasers.splice(index, 1);
+                }
+            });
+        }
+        
+        // Meteor shower
+        const meteors = [];
+        const meteorSpawnRate = 0.02; // Chance each frame for a new meteor
+
+        // Create meteors
+        function createMeteor() {
+            if (Math.random() < meteorSpawnRate) {
+                meteors.push({
+                    x: Math.random() * canvas.width,
+                    y: -20,
+                    width: Math.random() * 20 + 10,
+                    height: Math.random() * 20 + 10, // approximate height for collision
+                    radius: Math.random() * 10 + 5, // actual radius for drawing
+                    speed: Math.random() * 3 + 2,
+                    color: `rgb(${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(Math.random() * 100)}, ${Math.floor(Math.random() * 100)})`
+                });
+            }
+        }
+        
+        // Draw meteors
+        function drawMeteors() {
+            meteors.forEach((meteor, index) => {
+                ctx.fillStyle = meteor.color;
+                ctx.beginPath();
+                ctx.arc(meteor.x, meteor.y, meteor.radius, 0, Math.PI * 2); // Use radius for drawing
+                ctx.fill();
+                
+                // Add glow
+                const gradient = ctx.createRadialGradient(
+                    meteor.x, meteor.y, 0,
+                    meteor.x, meteor.y, meteor.radius * 2
+                );
+                gradient.addColorStop(0, `${meteor.color}80`);
+                gradient.addColorStop(1, `${meteor.color}00`);
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(meteor.x, meteor.y, meteor.radius * 2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Move meteor
+                meteor.y += meteor.speed;
+                
+                // Remove if off screen
+                if (meteor.y > canvas.height + 50) {
+                    meteors.splice(index, 1);
+                }
+            });
+        }
+
+        // Collision detection (AABB for ship, Circle for meteors)
+        // Adjusted for ship rectangle and meteor circle
+        function checkCollisionShipMeteor(ship, meteor) {
+            // Find the closest point on the AABB (ship) to the center of the circle (meteor)
+            let testX = meteor.x;
+            let testY = meteor.y;
+
+            if (meteor.x < ship.x - ship.width / 2) {
+                testX = ship.x - ship.width / 2;
+            } else if (meteor.x > ship.x + ship.width / 2) {
+                testX = ship.x + ship.width / 2;
+            }
+
+            if (meteor.y < ship.y - ship.height / 2) {
+                testY = ship.y - ship.height / 2;
+            } else if (meteor.y > ship.y + ship.height / 2) {
+                testY = ship.y + ship.height / 2;
+            }
+
+            // Calculate the distance from the closest point to the circle's center
+            const distX = meteor.x - testX;
+            const distY = meteor.y - testY;
+            const distance = Math.sqrt((distX * distX) + (distY * distY));
+
+            return distance <= meteor.radius;
+        }
+
+        // Collision detection for laser and meteor (circle-to-rectangle approximation)
+        function checkCollisionLaserMeteor(laser, meteor) {
+            // Find the closest point on the AABB (laser) to the center of the circle (meteor)
+            let testX = meteor.x;
+            let testY = meteor.y;
+
+            if (meteor.x < laser.x - laser.width / 2) {
+                testX = laser.x - laser.width / 2;
+            } else if (meteor.x > laser.x + laser.width / 2) {
+                testX = laser.x + laser.width / 2;
+            }
+
+            if (meteor.y < laser.y) { // Laser y is top, so compare with its top
+                testY = laser.y;
+            } else if (meteor.y > laser.y + laser.height) { // Laser y + height is bottom
+                testY = laser.y + laser.height;
+            }
+
+            // Calculate the distance from the closest point to the circle's center
+            const distX = meteor.x - testX;
+            const distY = meteor.y - testY;
+            const distance = Math.sqrt((distX * distX) + (distY * distY));
+
+            return distance <= meteor.radius;
+        }
+
+        // Update game state
+        function updateGame() {
+            if (!gameRunning || paused) return;
+
+            // Handle ship movement
+            if (keys['ArrowLeft'] && ship.x > ship.width/2) {
+                ship.x -= ship.speed;
+            }
+            if (keys['ArrowRight'] && ship.x < canvas.width - ship.width/2) {
+                ship.x += ship.speed;
+            }
+
+            // Create meteors
+            createMeteor();
+
+            // Update lasers and check for collisions with meteors
+            for (let i = lasers.length - 1; i >= 0; i--) {
+                const laser = lasers[i];
+                laser.y -= laser.speed;
+
+                let laserHit = false;
+                for (let j = meteors.length - 1; j >= 0; j--) {
+                    const meteor = meteors[j];
+                    if (checkCollisionLaserMeteor(laser, meteor)) {
+                        // Collision! Remove laser and meteor, increase score
+                        meteors.splice(j, 1);
+                        score += 10;
+                        scoreDisplay.textContent = score;
+                        laserHit = true;
+                        break; // Only one meteor per laser
+                    }
+                }
+
+                if (laserHit || laser.y < 0) {
+                    lasers.splice(i, 1);
+                }
+            }
+
+            // Update meteors and check for collisions with ship
+            for (let i = meteors.length - 1; i >= 0; i--) {
+                const meteor = meteors[i];
+                meteor.y += meteor.speed;
+
+                // Ship collision with meteor
+                if (!ship.invincible && checkCollisionShipMeteor(ship, meteor)) {
+                    lives--;
+                    livesDisplay.textContent = lives;
+                    meteors.splice(i, 1); // Remove meteor after collision
+
+                    if (lives <= 0) {
+                        endGame();
+                        return; // Stop update if game ends
+                    } else {
+                        ship.invincible = true;
+                        ship.invincibilityTimer = 120; // 2 seconds of invincibility (60 frames/sec * 2)
+                    }
+                }
+
+                if (meteor.y > canvas.height + 50) {
+                    meteors.splice(i, 1);
+                }
+            }
+
+            // Handle invincibility timer
+            if (ship.invincible) {
+                ship.invincibilityTimer--;
+                if (ship.invincibilityTimer <= 0) {
+                    ship.invincible = false;
+                }
+            }
+        }
+        
+        // Key handling
+        const keys = {};
+        
+        window.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            
+            // Shoot with spacebar
+            if (e.key === ' ' && gameRunning && !paused) {
+                shoot();
+                e.preventDefault(); // Prevent scrolling with spacebar
+            }
+            // Toggle pause with 'P'
+            if (e.key.toLowerCase() === 'p' && gameRunning) {
+                togglePause();
+            }
+        });
+        
+        window.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        // Game State Management
+        function showStartScreen() {
+            gameOverlay.classList.remove('hidden');
+            gameUI.classList.add('hidden');
+            overlayTitle.textContent = "Rescate Espacial";
+            startButton.classList.remove('hidden');
+            gameOverText.classList.add('hidden');
+            restartButton.classList.add('hidden');
+            pauseButton.classList.add('hidden'); // Hide pause button on start screen
+        }
+
+        function startGame() {
+            gameRunning = true;
+            paused = false;
+            score = 0;
+            lives = 3;
+            setCanvasDimensions(); // Ensure ship is positioned correctly at start
+            ship.invincible = false;
+            ship.invincibilityTimer = 0;
+            lasers.length = 0; // Clear lasers
+            meteors.length = 0; // Clear meteors
+            scoreDisplay.textContent = score;
+            livesDisplay.textContent = lives;
+
+            gameOverlay.classList.add('hidden');
+            gameUI.classList.remove('hidden');
+            pauseButton.classList.remove('hidden'); // Show pause button during game
+            
+            gameLoop();
+        }
+
+        function endGame() {
+            gameRunning = false;
+            cancelAnimationFrame(animationFrameId); // Stop the game loop
+            gameOverlay.classList.remove('hidden');
+            gameUI.classList.add('hidden');
+            overlayTitle.textContent = "¡Juego Terminado!";
+            startButton.classList.add('hidden');
+            gameOverText.classList.remove('hidden');
+            finalScoreDisplay.textContent = score;
+            restartButton.classList.remove('hidden');
+            pauseButton.classList.add('hidden'); // Hide pause button on game over
+        }
+
+        function togglePause() {
+            paused = !paused;
+            if (paused) {
+                cancelAnimationFrame(animationFrameId);
+                pauseButton.textContent = "Reanudar";
+                gameOverlay.classList.remove('hidden');
+                overlayTitle.textContent = "Juego en Pausa";
+                startButton.classList.add('hidden');
+                gameOverText.classList.add('hidden');
+                restartButton.classList.add('hidden'); // Hide restart in pause
+            } else {
+                gameLoop();
+                pauseButton.textContent = "Pausa";
+                gameOverlay.classList.add('hidden');
+            }
+        }
+
+        // Event Listeners for buttons
+        startButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', startGame);
+        pauseButton.addEventListener('click', togglePause);
+        
+        // Game loop
+        function gameLoop() {
+            if (!gameRunning || paused) return; // Important check
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            updateGame(); // Update game logic
+            
+            // Draw game elements (order matters for layering)
+            drawMeteors();
+            drawLasers();
+            ship.draw();
+            
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+        
+        // Initialize game:
+        // 1. Set initial canvas dimensions
+        // 2. Show start screen
+        setCanvasDimensions();
+        window.addEventListener('resize', setCanvasDimensions); // Listen for resize *after* initial set
+        showStartScreen(); // This will make the start button visible
+    </script>
+</body>
+</html>

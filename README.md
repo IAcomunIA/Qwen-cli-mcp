@@ -1,128 +1,224 @@
-<img width="1920" height="1080" alt="Copia de que es (4) (1)" src="https://github.com/user-attachments/assets/510e6db8-cc45-486e-88c0-7e80f2c2e9fa" />
-# 🚀 Tu Primer Servidor MCP con Gemini CLI: Domina la Terminal con IA 💻
+# Qwen CLI
 
-¡Bienvenido a tu aventura para conectar Gemini CLI con un servidor MCP (Model Context Protocol)! 🎉  
-Este proyecto te permite interactuar con la API de CoinGecko usando Gemini CLI, desbloqueando un arsenal de herramientas para obtener datos de criptomonedas: precios, tendencias, NFTs y mucho más. Aprende a configurarlo local o remotamente con esta guía paso a paso. 🌐
+![Captura de Qwen CLI](./docs/assets/qwen-cli-screenshot.png)
 
----
+Qwen CLI es una potente herramienta de línea de comandos para flujos de trabajo con IA, adaptada de [**Gemini CLI**](https://github.com/google-gemini/gemini-cli) (consulta [README.gemini.md](./README.gemini.md) para más detalles). Está optimizada para el modelo [Qwen3-Coder-480B-A35B-Instruct](https://github.com/QwenLM/Qwen3-Coder), con soporte mejorado para análisis de código y la integración con el Protocolo de Contexto de Modelo (MCP). Permite a los desarrolladores crear juegos, aplicaciones web, repositorios y plataformas de anime desde la terminal.
 
-## 🎥 Tutorial en Video  
-Aprende en vivo cómo conectar tu primer servidor MCP, explora sus herramientas y automatiza tus proyectos como un experto en IA terminal.  
-🔗 [Ver video en YouTube]([https://youtu.be/xxxx](https://www.youtube.com/watch?v=VnJpMbtYxS4)
+## Características Principales
 
-[![Mira el tutorial](https://img.youtube.com/vi/VnJpMbtYxS4/0.jpg)](https://www.youtube.com/watch?v=VnJpMbtYxS4)
+- **Comprensión y Edición de Código** - Analiza y edita grandes bases de código con una ventana de contexto de 262,144 tokens.
+- **Automatización de Flujos de Trabajo** - Automatiza tareas como la gestión de repositorios en GitHub, pull requests y flujos complejos usando MCP.
+- **Análisis Mejorado** - Optimizado para modelos Qwen3-Coder, con soporte para MCP y conexiones con OpenRouter y Hugging Face.
+- **Proyectos Creativos** - Crea aplicaciones web, juegos y plataformas como servicios de streaming de anime directamente desde la terminal.
+
+## Inicio Rápido
+
+### Requisitos Previos
+
+Asegúrate de tener instalado [Node.js versión 20](https://nodejs.org/en/download) o superior.
+
+```bash
+curl -qL https://www.npmjs.com/install.sh | sh
+```
+
+### Instalación
+
+Instala Qwen CLI globalmente:
+
+```bash
+npm install -g @qwen-code/qwen-cli
+qwen --version
+```
+
+Ejecuta Qwen CLI desde cualquier lugar:
+
+```bash
+qwen
+```
+
+Configura las variables de entorno para usar OpenRouter:
+***Open Router***
+
+```bash
+export OPENAI_API_KEY="tu_clave_openrouter"
+export OPENAI_BASE_URL="https://openrouter.ai/api/v1"
+export OPENAI_MODEL="qwen/qwen3-coder:free"
+```
+
+***HuggingFace***
+
+```bash
+export OPENAI_API_KEY="tu-clave-hugging-face"
+export OPENAI_BASE_URL="https://router.huggingface.co/v1"
+export OPENAI_MODEL="Qwen/Qwen3-Coder-480B-A35B-Instruct:hyperbolic"e"
+```
+
+***MCP Github***
+```bash
+export GITHUB_PERSONAL_ACCESS_TOKEN="Aqui la API Keys""
+```
 
 
----
 
-## 🌍 Únete a la Comunidad  
-Comparte, aprende y crece con iacomunia.com – tu espacio para innovar con inteligencia artificial y automatización.
 
----
+O instala desde el código fuente:
 
-## 🛠 ¿Qué es este proyecto?  
-Un servidor MCP para conectar Gemini CLI con la API de CoinGecko.  
-⚡ Al arrancar obtendrás acceso a 46 herramientas para consultas cripto avanzadas, con comandos simples y mucha potencia.
+```bash
+git clone https://github.com/QwenLM/qwen-cli.git
+cd qwen-cli
+npm install
+npm install -g .
+```
 
----
+### Configuración Interna
 
-## 📋 Requisitos  
-- Node.js 20.18.1+ (`node --version`)  
-- Yarn (`yarn --version`)  
-- Gemini CLI instalado y configurado
+Configura los ajustes de Qwen CLI editando el archivo `settings.json`:
 
----
+```bash
+cd ~/.qwen
+nano settings.json
+```
 
-## ⚙️ Instalación rápida
-
-`
-git clone https://github.com/IAcomunIA/MCP_firts.git
-cd MCP_firts
-yarn install
-
-`
----
-
-## 🔧 Configuración
-
-1. Crea archivo `.env` con tu API key (opcional para demo):
-
-`
-
-COINGECKO_DEMO_API_KEY=tu-api-key
-
-`
-2. Modifica la configuración de Gemini CLI en `~/.gemini/settings.json`  
-👉 **Opción Local:**
+Ejemplo de configuración:
 
 ```json
 {
+  "selectedAuthType": "openai",
+  "theme": "GitHub",
+  "maxSessionTurns": 50,
   "mcpServers": {
-    "coingecko_mcp_local": {
+    "Github_mcp_local": {
       "command": "npx",
-      "args": ["-y", "@coingecko/coingecko-mcp"],
-      "cwd": "/ruta/a/MCP_firts/",
-      "env": {
-        "COINGECKO_DEMO_API_KEY": "YOUR_DEMO_API_KEY",
-        "COINGECKO_ENVIRONMENT": "demo"
-      }
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "cwd": "/home/kasnino/MCP_qWEN/Github-mcp"
     }
-  }
+  },
+  "sampling_params": {
+    "max_tokens": 4096,
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "top_k": 40,
+    "repetition_penalty": 1.1,
+    "presence_penalty": 0,
+    "frequency_penalty": 0
+  },
+  "showMemoryUsage": true,
+  "usageStatisticsEnabled": false,
+  "enableOpenAILogging": false,
+  "fileFiltering": {
+    "respectGitIgnore": true,
+    "enableRecursiveFileSearch": true
+  },
+  "hideTips": false,
+  "hideBanner": false,
+  "hideWindowTitle": false
 }
 ```
-👉 **Opción Remota:**
-```json
-{
-"mcpServers": {
-"coingecko_mcp": {
-"command": "npx",
-"args": [
-"mcp-remote",
-"https://mcp.api.coingecko.com/sse"
-]
-}
-}
-}
+
+### Configuración de la API
+
+Configura tu clave API para Qwen CLI (también puedes añadirla en un archivo `.env` en tu proyecto):
+
+
+
+## Ejemplos de Uso
+
+### Explorar Bases de Código
+
+Navega a tu proyecto y usa Qwen CLI para analizarlo:
+
+```bash
+cd tu-proyecto/
+qwen
+> Describe la arquitectura principal de esta plataforma de anime
 ```
----
 
-## 🚦 Cómo usar
+### Desarrollo de Código
 
-Arranca el servidor local:
-```json
-yarn start
+Refactoriza o crea código nuevo con asistencia de IA:
+
+```bash
+> Refactoriza este componente React para una landing page usando Tailwind CSS
 ```
-Interactúa con Gemini CLI usando comandos como:
-```json
-gemini get_simple_price
-gemini get_coins_markets
+
+### Automatización de Flujos con MCP
+
+Gestiona repositorios de GitHub usando el servidor GitHub MCP:
+
+```bash
+> Crea un issue en el repositorio 'tuusuario/plataforma-anime' con el título 'Añadir scraper de anime'
 ```
-¡Explora todas las herramientas y automatiza consultas cripto directas!
 
----
+Genera assets para un juego:
 
-## 🐛 Solución de problemas comunes
+```bash
+> Convierte todas las imágenes en ./assets a formato WebP para un juego
+```
 
-- **No encuentra MCP:** Revisa que la ruta `cwd` en settings.json sea correcta.  
-- **API Key inválida:** Usa modo demo o verifica tu `.env`.  
-- **Problemas con Yarn:** Instala o actualiza `yarn` y ejecuta `yarn install` otra vez.
+## Tareas Populares
 
----
+### Comprender Bases de Código Nuevas
 
-## 🌟 Recursos útiles
+```text
+> ¿Cuáles son los componentes principales de esta aplicación web?
+> ¿Cómo se maneja la autenticación en esta plataforma?
+> Explica el flujo de datos para el sistema de recomendaciones de anime
+```
 
-- [Awesome MCP Servers – 1000+ MCP open source](https://github.com/wong2/awesome-mcp-servers)  
-- [Documentación oficial CoinGecko API](https://www.coingecko.com/en/api)  
-- [Comunidad iacomunia.com](https://iacomunia.com)
+### Refactorización y Optimización de Código
 
----
+```text
+> Optimiza este módulo JavaScript para mejorar el rendimiento
+> Refactoriza esta clase para seguir principios SOLID
+> Añade manejo de errores a este endpoint de API
+```
 
-## 🤝 ¿Quieres contribuir?  
-¿Tienes mejoras o ideas? ¡Abre un issue o pull request!  
-Sé parte activa y crece junto a la comunidad MCP.
+### Documentación y Pruebas
 
----
+```text
+> Genera comentarios JSDoc para esta función
+> Escribe pruebas unitarias para este componente de juego
+> Crea documentación de API para esta aplicación web
+```
 
-*¡A programar y automatizar con inteligencia artificial en tu terminal!* 🚀  
-*❤️ Hecho con pasión por la comunidad iAcomunIA*
+### Proyectos Creativos
 
+```text
+> Genera una landing page para una plataforma de streaming de anime
+> Crea un bucle de juego 2D para un juego estilo anime
+> Configura un repositorio en GitHub para una nueva app con automatización MCP
+```
+
+## Resultados de Benchmarks
+
+### Terminal-Bench (Julio 2025)
+
+| Agente    | Modelo                          | Precisión (%) |
+|-----------|--------------------------------|---------------|
+| Qwen CLI  | Qwen3-Coder-480B-A35B-Instruct | 72.0          |
+
+## Estructura del Proyecto
+
+```
+qwen-cli/
+├── packages/           # Paquetes principales
+├── docs/              # Documentación
+├── examples/          # Ejemplos de código (aplicaciones web, juegos, plataformas de anime)
+└── tests/             # Archivos de pruebas
+```
+
+## Desarrollo y Contribución
+
+Consulta [CONTRIBUTING.md](./CONTRIBUTING.md) para aprender cómo contribuir al proyecto.
+
+## Solución de Problemas
+
+Si encuentras problemas, revisa la [guía de solución de problemas](docs/troubleshooting.md).
+
+## Agradecimientos
+
+Qwen CLI está basado en [Google Gemini CLI](https://github.com/google-gemini/gemini-cli). Agradecemos al equipo de Gemini CLI por su excelente trabajo. Nuestras principales contribuciones se centran en optimizaciones de análisis y soporte para MCP con modelos Qwen3-Coder.
+
+## Licencia
+
+[Apache 2.0](./LICENSE)
